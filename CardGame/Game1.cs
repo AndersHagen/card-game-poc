@@ -1,5 +1,6 @@
 ﻿using CardGame.Core;
 using CardGame.Core.GameState;
+using CardGame.Core.Input.Commands;
 using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,11 +46,12 @@ namespace CardGame
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            var cmd = _currentState.Update(gameTime);
 
-            // TODO: Add your update logic here
-            _currentState.Update(gameTime);
+            if (cmd is ExitCommand)
+            {
+                Exit();
+            }
 
             base.Update(gameTime);
         }
