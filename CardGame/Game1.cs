@@ -41,7 +41,9 @@ namespace CardGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _currentState.LoadContent(Content);
+            TextureManager.Init(Content);
+
+            _currentState.LoadContent(Content, _spriteBatch) ;
         }
 
         protected override void Update(GameTime gameTime)

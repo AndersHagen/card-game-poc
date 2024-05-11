@@ -10,12 +10,12 @@ namespace CardGame.Core
 {
     public abstract class GameObject
     {
-        protected Texture2D Texture;
-        protected Vector2 Position;
-        protected Vector2 Scale;
+        public Texture2D Texture;
+        public Vector2 Position;
+        protected float Scale;
         protected Vector2 Center;
 
-        public GameObject(Texture2D texture, Vector2 position, Vector2 scale) 
+        public GameObject(Texture2D texture, Vector2 position, float scale) 
         {
             Texture = texture;
             Position = position;
@@ -38,6 +38,6 @@ namespace CardGame.Core
                 0f
                 );
         }
-        public abstract void IsActive();
+        public abstract bool IsActive();
     }
 }

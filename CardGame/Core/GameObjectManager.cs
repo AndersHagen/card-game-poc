@@ -37,5 +37,10 @@ namespace CardGame.Core
                 gameObject.Draw(spriteBatch);
             }
         }
+
+        public List<IClickable> GetClickableGameObjects() 
+        {
+            return _gameObjects.Where(o => o is IClickable).Cast<IClickable>().ToList();
+        }
     }
 }
