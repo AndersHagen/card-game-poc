@@ -12,22 +12,28 @@ namespace CardGame.Core.GameElements
     {
         // 200 x 275  (187,5 x 262,5)
 
+        private Point _location;
         private Rectangle _areaBorder;
+        private float _scale;
         private DeploySlot[] _deploySlots;
 
         private Texture2D _solid;
 
-        public DeploymentArea() 
+        public DeploymentArea(Point location, int slots, float scale, int padding = 10) 
         {
-            var topX = 100;
-            var topY = 750; 
-            _areaBorder = new Rectangle(topX, topY, 1000, 275);
-            _deploySlots = new DeploySlot[5];
+            _location = location;
+            _scale = scale;
+
+            var width = (int)(scale * (slots * (Constants.CARD_WIDTH + padding) + padding));
+            var height = (int)(scale * (Constants.CARD_HEIGHT + padding + padding));
+
+            _areaBorder = new Rectangle(_location, new Point(width, height));
+            _deploySlots = new DeploySlot[slots];
 
             for (var i = 0; i < _deploySlots.Length; i++)
             {
-                var offset = 200 * i + 6;
-                _deploySlots[i] = new DeploySlot(new Rectangle(topX + offset, topY + 6, 187, 262));
+                var offset = (int)(scale * ((Constants.CARD_WIDTH + padding) * i + padding));
+                _deploySlots[i] = new DeploySlot(new Rectangle(_location.X + offset, _location.Y + (int)(scale * padding), (int)(scale * Constants.CARD_WIDTH), (int)(scale * Constants.CARD_HEIGHT)), scale);
             }
         }
 

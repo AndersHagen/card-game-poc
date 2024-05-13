@@ -7,11 +7,14 @@ namespace CardGame.Core.GameElements
     {
         public Rectangle Bound { get; private set; }
 
+        private float _scale;
+
         public Card DeployedCard { get; private set; }
 
-        public DeploySlot(Rectangle bound)
+        public DeploySlot(Rectangle bound, float scale)
         {
             Bound = bound;
+            _scale = scale;
         }
 
         public bool IsClicked(int x, int y)
@@ -54,6 +57,7 @@ namespace CardGame.Core.GameElements
         {
             DeployedCard = card;
             card.SnapToPosition(Bound.Center.ToVector2());
+            card.SetScale(_scale);
         }
     }
 }

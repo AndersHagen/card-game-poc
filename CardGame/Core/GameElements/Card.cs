@@ -75,5 +75,10 @@ namespace CardGame.Core.GameElements
             Position = position;
             SetBound();
         }
+
+        internal void SetScale(float scale)
+        {
+            Scale = scale;
+        }
     }
 }
