@@ -60,9 +60,8 @@ namespace CardGame
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.SlateGray);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
             _currentState.Draw(_spriteBatch);

@@ -31,7 +31,7 @@ namespace CardGame.Core.GameState
             GameObjectManager = gameObjectManager;
             InputHandler = new InputHandler();
             _mouseHeld = false;
-            _playerArea = new DeploymentArea();
+            _playerArea = new DeploymentArea(new Point(100, 750), 5, 0.2f);
         }
 
         public void LoadContent(ContentManager contentManager, SpriteBatch spriteBatch)
