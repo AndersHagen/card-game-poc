@@ -9,13 +9,18 @@ namespace CardGame.Core.GameElements
         private Rectangle _bound;
         private bool _held;
         private Texture2D _cardBack;
+        private Texture2D _cardFront;
 
-        public Card(Texture2D front, Texture2D back, Vector2 position, float scale) : base(back, position, scale)
+        private bool _isFaceUp;
+
+        public Card(Texture2D front, Texture2D back, Vector2 position, float scale) : base(front, position, scale)
         {
             _cardBack = back;
+            _cardFront = front;
             SetBound();
             _held = false;
             Texture = front;
+            _isFaceUp = true;
         }
 
         private void SetBound()
@@ -42,14 +47,23 @@ namespace CardGame.Core.GameElements
             Scale += 0.02f;
         }
 
-        public void Drop()
+        public void Drop(CardStack target = null)
         {
-            Scale -= 0.02f;
+            if (target != null)
+            {
+                Scale = target.Scale;
+            }
+            else
+            {
+                Scale -= 0.02f;
+            }
+
             _held = false;
         }
 
         public override void Update(GameTime gameTime)
         {
+            Texture = _isFaceUp ? _cardFront : _cardBack;
         }
 
         public void OnClick(int x, int y)
@@ -79,6 +93,11 @@ namespace CardGame.Core.GameElements
         internal void SetScale(float scale)
         {
             Scale = scale;
+        }
+
+        internal void Flip(bool faceUp)
+        {
+            _isFaceUp = faceUp;
         }
     }
 }

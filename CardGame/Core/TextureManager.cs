@@ -24,6 +24,9 @@ namespace CardGame.Core
         public static Texture2D CardTestImage;
         public static Texture2D CardSkeleMage;
         public static Texture2D BackgroundDarkFrost;
+        public static Texture2D CardBoneGolem;
+        public static Texture2D CardSkeletalWarlord;
+        public static Texture2D CardSwampZombie;
 
 
         public static void Init(ContentManager contentManager)
@@ -40,6 +43,9 @@ namespace CardGame.Core
             CardStarframe = contentManager.Load<Texture2D>("gfx/cards/star_frame");
             CardTestImage = contentManager.Load<Texture2D>("gfx/cards/testimage");
             CardSkeleMage = contentManager.Load<Texture2D>("gfx/cards/skele_mage");
+            CardBoneGolem = contentManager.Load<Texture2D>("gfx/cards/bone_golem");
+            CardSkeletalWarlord = contentManager.Load<Texture2D>("gfx/cards/skeleton_warlord");
+            CardSwampZombie = contentManager.Load<Texture2D>("gfx/cards/swamp_zombie");
 
             BackgroundDarkFrost = contentManager.Load<Texture2D>("gfx/scenery/background");
         }
