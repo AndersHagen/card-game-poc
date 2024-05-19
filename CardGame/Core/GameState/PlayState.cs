@@ -4,8 +4,10 @@ using CardGame.Core.Input.Commands;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace CardGame.Core.GameState
 {
@@ -16,14 +18,20 @@ namespace CardGame.Core.GameState
         private bool _mouseHeld;
 
         private Card HeldCard;
+        private Card DealtCard;
         private Vector2? HeldCardPosition;
+        private Vector2? DealtCardPosition;
+        private CardStack DealtCardTarget;
+        private Vector2? DealtCardTargetPosition;
         private CardStack _lastStack;
 
         private StackGroup _playerArea;
         private StackGroup _playerHand;
-        private StackGroup _playerDeck;
+        private CardDeck _playerDeck;
 
         private List<StackGroup> _playerStacks;
+
+        private bool _dealingFromDeck;
 
         public PlayState(GameObjectManager gameObjectManager)
         {
@@ -32,7 +40,7 @@ namespace CardGame.Core.GameState
             _mouseHeld = false;
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
             _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
-            _playerDeck = new StackGroup(new Point(1400, 800), 1, 0.25f, 10, StackType.PickupOnly, 10, false);
+            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.PickupOnly, 10, false);
 
             _playerStacks = new List<StackGroup>() 
             {
@@ -40,6 +48,8 @@ namespace CardGame.Core.GameState
                 _playerHand,
                 _playerDeck,
             };
+
+            _dealingFromDeck = false;
         }
 
         public void LoadContent(ContentManager contentManager, SpriteBatch spriteBatch)
@@ -73,80 +83,128 @@ namespace CardGame.Core.GameState
             _playerDeck.AssignCardToSlot(c9, 0);
             _playerDeck.AssignCardToSlot(c10, 0);
 
-            _playerDeck.Shuffle(0);
+            _playerDeck.Shuffle();
         }
 
         public GameCommand Update(GameTime gameTime)
         {
             var commands = InputHandler.GetInput();
 
-            foreach (var command in commands)
+            if (commands.Any(c => c is ExitCommand))
             {
-                if (command is ExitCommand) return command;
+                return new ExitCommand();
+            }
 
-                if (command is MouseClickCommand click)
+            if (_dealingFromDeck)
+            {
+                if (Math.Abs((DealtCard.Position - DealtCardTargetPosition.Value).Length()) <= 20)
                 {
-                    Debug.WriteLine(command);
-
-                    var clickedStack = CheckIfStackClicked(click);
-
-                    if (clickedStack is CardStack stack)
-                    {
-                        var topCard = stack.GetTopCard();
-
-                        if (topCard != null && HeldCard == null)
-                        {
-                            HeldCard = topCard;
-                            HeldCard.Lift();
-                            HeldCardPosition = topCard.Position;
-                            _lastStack = stack;
-                            stack.PopCard();
-                        }
-                    }
+                    DealtCardTarget.AddCard(DealtCard);
+                    DealtCard.SetVelocity(Vector2.Zero);
+                    DealtCard = null;
+                    DealtCardPosition = null;
+                    DealtCardTarget = null;
+                    DealtCardTargetPosition = null;
+                    _dealingFromDeck = FillHandFromDeck();
                 }
-                if (command is MouseDraggedCommand)
+            }
+            else
+            {
+                foreach (var command in commands)
                 {
-                    if (!_mouseHeld) 
-                    { 
+                    if (command is DrawCommand)
+                    {
+                        FillHandFromDeck();
+                    }
+
+                    if (command is MouseClickCommand click)
+                    {
                         Debug.WriteLine(command);
-                        _mouseHeld = true;
-                    }
 
-                    if (HeldCard != null)
-                    {
-                        HeldCard.OnDrag((command as MouseDraggedCommand).X, (command as MouseDraggedCommand).Y);    
-                    }
+                        var clickedStack = CheckIfStackClicked(click);
 
-                }
-                if (command is MouseReleaseCommand cmd)
-                {
-                    Debug.WriteLine(cmd);
-                    _mouseHeld = false;
-
-                    if (HeldCard != null)
-                    {
-                        var dropTarget = _playerArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _playerHand.OnDrop(HeldCard, cmd.X, cmd.Y);
-
-                        if (dropTarget is CardStack slot)
+                        if (clickedStack is CardStack stack)
                         {
-                            HeldCard.Drop(slot);
+                            var topCard = stack.GetTopCard();
+
+                            if (topCard != null && HeldCard == null)
+                            {
+                                HeldCard = topCard;
+                                HeldCard.Lift();
+                                HeldCardPosition = topCard.Position;
+                                _lastStack = stack;
+                                stack.PopCard();
+                            }
                         }
-                        else
-                        {
-                            _lastStack.OnDrop(HeldCard, (int)HeldCardPosition?.X, (int)HeldCardPosition?.Y, true);
-                            HeldCard.Drop(_lastStack);
-                        }
-                        
-                        HeldCard = null;
-                        HeldCardPosition = null;
-                        _lastStack = null;
                     }
+                    if (command is MouseDraggedCommand)
+                    {
+                        if (!_mouseHeld)
+                        {
+                            Debug.WriteLine(command);
+                            _mouseHeld = true;
+                        }
+
+                        if (HeldCard != null)
+                        {
+                            HeldCard.OnDrag((command as MouseDraggedCommand).X, (command as MouseDraggedCommand).Y);
+                        }
+
+                    }
+                    if (command is MouseReleaseCommand cmd)
+                    {
+                        Debug.WriteLine(cmd);
+                        _mouseHeld = false;
+
+                        if (HeldCard != null)
+                        {
+                            var dropTarget = _playerArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _playerHand.OnDrop(HeldCard, cmd.X, cmd.Y);
+
+                            if (dropTarget is CardStack slot)
+                            {
+                                HeldCard.Drop(slot);
+                            }
+                            else
+                            {
+                                _lastStack.OnDrop(HeldCard, (int)HeldCardPosition?.X, (int)HeldCardPosition?.Y, true);
+                                HeldCard.Drop(_lastStack);
+                            }
+
+                            HeldCard = null;
+                            HeldCardPosition = null;
+                            _lastStack = null;
+                        }
+                    }
+
                 }
             }
 
             GameObjectManager.Update(gameTime);
 
             return new EmptyCommand();
+        }
+
+        private bool FillHandFromDeck()
+        {
+            var emptyStacks = _playerHand.GetEmptyStacks();
+
+            if (emptyStacks.Count > 0 && _playerDeck.TopCard != null)
+            {
+                var stack = emptyStacks.First();
+                var deckTopCard = _playerDeck.GetTopCard();
+
+                DealtCard = deckTopCard;
+                DealtCardPosition = deckTopCard.Position;
+                DealtCardTarget = stack;
+                DealtCardTargetPosition = stack.Bound.Center.ToVector2();
+
+                DealtCard.SetVelocity((DealtCardTargetPosition.Value - DealtCardPosition.Value) / 50f);
+                _dealingFromDeck = true;
+
+                return true;
+            }
+
+            return false;
         }
 
         private IClickable CheckIfStackClicked(MouseClickCommand click)

@@ -22,7 +22,7 @@ namespace CardGame.Core
 
             gfx.SetRenderTarget(target);
 
-            gfx.Clear(new Color(Color.Black, 0f));
+            gfx.Clear(Color.Black);
 
             spriteBatch.Begin();
 

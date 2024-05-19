@@ -14,6 +14,7 @@ namespace CardGame.Core.GameElements
         public Card TopCard => _cards.Count > 0 ? _cards.Peek() : null;
 
         public bool IsFull => _cards.Count == _maxStackSize;
+        public bool IsEmpty => _cards.Count == 0;
 
         public float Scale => _scale;
         private StackType _slotType;
