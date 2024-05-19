@@ -1,6 +1,8 @@
 ﻿using CardGame.Core.GameElements;
+using CardGame.Core.GameElements.GameCards;
 using CardGame.Core.Input;
 using CardGame.Core.Input.Commands;
+using CardGame.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,7 +42,7 @@ namespace CardGame.Core.GameState
             _mouseHeld = false;
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
             _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
-            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.NotInteractive, 10, false);
+            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.NotInteractive, 20, false);
 
             _playerStacks = new List<StackGroup>() 
             {
@@ -54,34 +56,11 @@ namespace CardGame.Core.GameState
 
         public void LoadContent(ContentManager contentManager, SpriteBatch spriteBatch)
         {
-            var front1 = CardFactory.BuildFrontTexture(spriteBatch, TextureManager.CardTestImage);
-            var front2 = CardFactory.BuildFrontTexture(spriteBatch, TextureManager.CardSkeleMage);
-            var front3 = CardFactory.BuildFrontTexture(spriteBatch, TextureManager.CardBoneGolem);
-            var front4 = CardFactory.BuildFrontTexture(spriteBatch, TextureManager.CardSkeletalWarlord);
-            var front5 = CardFactory.BuildFrontTexture(spriteBatch, TextureManager.CardSwampZombie);
-
-            var c1 = CardFactory.CreateCard(GameObjectManager, front1, TextureManager.CardBack, new Vector2(400, 400));
-            var c2 = CardFactory.CreateCard(GameObjectManager, front2, TextureManager.CardBack, new Vector2(800, 400));
-            var c3 = CardFactory.CreateCard(GameObjectManager, front3, TextureManager.CardBack, new Vector2(400, 400));
-            var c4 = CardFactory.CreateCard(GameObjectManager, front4, TextureManager.CardBack, new Vector2(800, 400));
-            var c5 = CardFactory.CreateCard(GameObjectManager, front5, TextureManager.CardBack, new Vector2(400, 400));
-
-            var c6 = CardFactory.CreateCard(GameObjectManager, front1, TextureManager.CardBack, new Vector2(400, 400));
-            var c7 = CardFactory.CreateCard(GameObjectManager, front2, TextureManager.CardBack, new Vector2(800, 400));
-            var c8 = CardFactory.CreateCard(GameObjectManager, front3, TextureManager.CardBack, new Vector2(400, 400));
-            var c9 = CardFactory.CreateCard(GameObjectManager, front4, TextureManager.CardBack, new Vector2(800, 400));
-            var c10 = CardFactory.CreateCard(GameObjectManager, front5, TextureManager.CardBack, new Vector2(400, 400));
-
-            _playerDeck.AssignCardToSlot(c1, 0);
-            _playerDeck.AssignCardToSlot(c2, 0);
-            _playerDeck.AssignCardToSlot(c3, 0);
-            _playerDeck.AssignCardToSlot(c4, 0);
-            _playerDeck.AssignCardToSlot(c5, 0);
-            _playerDeck.AssignCardToSlot(c6, 0);
-            _playerDeck.AssignCardToSlot(c7, 0);
-            _playerDeck.AssignCardToSlot(c8, 0);
-            _playerDeck.AssignCardToSlot(c9, 0);
-            _playerDeck.AssignCardToSlot(c10, 0);
+            for (var i = 0; i < 16; i++)
+            {
+                var id = (CardId)(i % 4);
+                _playerDeck.AssignCardToSlot(CardFactory.CreateCard(GameObjectManager, TextureManager.CardImages[id], TextureManager.CardBack), 0);
+            }
 
             _playerDeck.Shuffle();
         }

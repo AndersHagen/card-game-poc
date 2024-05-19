@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CardGame.Core.GameElements.GameCards;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
