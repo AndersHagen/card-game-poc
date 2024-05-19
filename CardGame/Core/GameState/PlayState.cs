@@ -40,7 +40,7 @@ namespace CardGame.Core.GameState
             _mouseHeld = false;
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
             _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
-            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.PickupOnly, 10, false);
+            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.NotInteractive, 10, false);
 
             _playerStacks = new List<StackGroup>() 
             {
@@ -125,7 +125,7 @@ namespace CardGame.Core.GameState
 
                         if (clickedStack is CardStack stack)
                         {
-                            var topCard = stack.GetTopCard();
+                            var topCard = stack.PeekTopCard();
 
                             if (topCard != null && HeldCard == null)
                             {

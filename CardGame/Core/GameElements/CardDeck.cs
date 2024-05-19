@@ -32,7 +32,7 @@ namespace CardGame.Core.GameElements
 
         public Card GetTopCard()
         {
-            var card = Stack.GetTopCard();
+            var card = Stack.PeekTopCard(true);
 
             if (card != null)
             {
