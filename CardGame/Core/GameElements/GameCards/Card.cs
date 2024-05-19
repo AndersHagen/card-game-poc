@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace CardGame.Core.GameElements
+namespace CardGame.Core.GameElements.GameCards
 {
     public class Card : GameObject, IDragable
     {

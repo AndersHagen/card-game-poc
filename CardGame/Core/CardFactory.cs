@@ -1,4 +1,5 @@
-﻿using CardGame.Core.GameElements;
+﻿using CardGame.Core.GameElements.GameCards;
+using CardGame.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,9 +8,9 @@ namespace CardGame.Core
 {
     public static class CardFactory
     {
-        public static Card CreateCard(GameObjectManager graphicsManager, Texture2D front, Texture2D back, Vector2 position)
+        public static Card CreateCard(GameObjectManager graphicsManager, Texture2D front, Texture2D back)
         {
-            var card = new Card(front, back, position, 0.25f);
+            var card = new Card(front, back, Vector2.Zero, 1f);
             graphicsManager.RegisterObject(card);
             return card;
         }

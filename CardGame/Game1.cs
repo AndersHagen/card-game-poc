@@ -1,6 +1,7 @@
 ﻿using CardGame.Core;
 using CardGame.Core.GameState;
 using CardGame.Core.Input.Commands;
+using CardGame.Data;
 using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,7 +42,7 @@ namespace CardGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            TextureManager.Init(Content);
+            TextureManager.Init(Content, _spriteBatch);
 
             _currentState.LoadContent(Content, _spriteBatch) ;
         }

@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using CardGame.Core;
+using CardGame.Core.GameElements.GameCards;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.Json;
 
-namespace CardGame.Core
+namespace CardGame.Data
 {
     public static class TextureManager
     {
+        public static Dictionary<CardId, Texture2D> CardImages = new Dictionary<CardId, Texture2D>();
+
         public static Texture2D CardBack;
         public static Texture2D CardFrame;
         public static Texture2D CardDecor;
@@ -21,15 +22,9 @@ namespace CardGame.Core
         public static Texture2D CardInfoBar;
         public static Texture2D CardStar;
         public static Texture2D CardStarframe;
-        public static Texture2D CardTestImage;
-        public static Texture2D CardSkeleMage;
         public static Texture2D BackgroundDarkFrost;
-        public static Texture2D CardBoneGolem;
-        public static Texture2D CardSkeletalWarlord;
-        public static Texture2D CardSwampZombie;
 
-
-        public static void Init(ContentManager contentManager)
+        public static void Init(ContentManager contentManager, SpriteBatch spriteBatch)
         {
             CardBack = contentManager.Load<Texture2D>("gfx/cards/cardback1");
             CardFrame = contentManager.Load<Texture2D>("gfx/cards/frame");
@@ -41,14 +36,25 @@ namespace CardGame.Core
             CardInfoBar = contentManager.Load<Texture2D>("gfx/cards/info_bar");
             CardStar = contentManager.Load<Texture2D>("gfx/cards/star");
             CardStarframe = contentManager.Load<Texture2D>("gfx/cards/star_frame");
-            CardTestImage = contentManager.Load<Texture2D>("gfx/cards/testimage");
-            CardSkeleMage = contentManager.Load<Texture2D>("gfx/cards/skele_mage");
-            CardBoneGolem = contentManager.Load<Texture2D>("gfx/cards/bone_golem");
-            CardSkeletalWarlord = contentManager.Load<Texture2D>("gfx/cards/skeleton_warlord");
-            CardSwampZombie = contentManager.Load<Texture2D>("gfx/cards/swamp_zombie");
 
             BackgroundDarkFrost = contentManager.Load<Texture2D>("gfx/scenery/background");
+
+            BuildCardTextures(new List<CardData>(), contentManager, spriteBatch);
         }
 
+        private static void BuildCardTextures(List<CardData> cards, ContentManager contentManager, SpriteBatch spriteBatch)
+        {
+            using (var s = new StreamReader("Data/cards.json"))
+            {
+                var content = s.ReadToEnd();
+                cards = JsonSerializer.Deserialize<List<CardData>>(content);
+            }
+
+            foreach (var card in cards)
+            {
+                var texture = contentManager.Load<Texture2D>($"gfx/cards/{card.Image}");
+                CardImages.Add(card.CardId, CardFactory.BuildFrontTexture(spriteBatch, texture));
+            }
+        }
     }
 }

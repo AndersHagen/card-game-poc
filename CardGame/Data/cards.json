@@ -1,0 +1,18 @@
+[
+  {
+    "CardId": 0,
+    "Image": "skele_mage"
+  },
+  {
+    "CardId": 1,
+    "Image": "swamp_zombie"
+  },
+  {
+    "CardId": 2,
+    "Image": "skeleton_warlord"
+  },
+  {
+    "CardId": 3,
+    "Image": "bone_golem"
+  }
+]
