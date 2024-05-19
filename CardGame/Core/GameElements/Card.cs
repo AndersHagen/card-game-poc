@@ -13,6 +13,8 @@ namespace CardGame.Core.GameElements
 
         private bool _isFaceUp;
 
+        private Vector2 _velocity;
+
         public Card(Texture2D front, Texture2D back, Vector2 position, float scale) : base(front, position, scale)
         {
             _cardBack = back;
@@ -21,6 +23,7 @@ namespace CardGame.Core.GameElements
             _held = false;
             Texture = front;
             _isFaceUp = true;
+            _velocity = Vector2.Zero;
         }
 
         private void SetBound()
@@ -64,6 +67,13 @@ namespace CardGame.Core.GameElements
         public override void Update(GameTime gameTime)
         {
             Texture = _isFaceUp ? _cardFront : _cardBack;
+
+            Position += _velocity;
+        }
+
+        public void SetVelocity(Vector2 velocity)
+        {
+            _velocity = velocity;
         }
 
         public void OnClick(int x, int y)

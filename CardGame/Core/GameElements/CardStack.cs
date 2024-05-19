@@ -14,19 +14,22 @@ namespace CardGame.Core.GameElements
         public Card TopCard => _cards.Count > 0 ? _cards.Peek() : null;
 
         public bool IsFull => _cards.Count == _maxStackSize;
+        public bool IsEmpty => _cards.Count == 0;
 
         public float Scale => _scale;
-        private StackType _slotType;
+        private StackType _stackType;
 
         private Stack<Card> _cards;
         private int _maxStackSize;
         private bool _faceUp;
 
+        private bool NoDrop => _stackType == StackType.PickupOnly || _stackType == StackType.NotInteractive;
+
         public CardStack(Rectangle bound, float scale, StackType slotType, int stackSize = 1, bool faceUp = true)
         {
             Bound = bound;
             _scale = scale;
-            _slotType = slotType;
+            _stackType = slotType;
             _cards = new Stack<Card>();
             _maxStackSize = stackSize;
             _faceUp = faceUp;
@@ -51,7 +54,7 @@ namespace CardGame.Core.GameElements
 
         public IDropable OnDrop(IDragable dropped, int x, int y, bool isFailedMove = false)
         {
-            if ((_slotType == StackType.PickupOnly && !isFailedMove) || !Bound.Contains(x, y)) return null;
+            if ((NoDrop && !isFailedMove) || !Bound.Contains(x, y)) return null;
 
             if (dropped is Card card && !IsFull)
             {
@@ -62,9 +65,9 @@ namespace CardGame.Core.GameElements
             return null;
         }
 
-        public Card GetTopCard()
+        public Card PeekTopCard(bool force = false)
         {
-            if (_slotType == StackType.Regular || _slotType == StackType.PickupOnly)
+            if (force || _stackType == StackType.Regular || _stackType == StackType.PickupOnly)
             {
                 return TopCard;
             }

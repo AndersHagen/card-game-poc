@@ -1,19 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CardGame.Core.GameElements
 {
     public class StackGroup : IClickable, IDropable
     {
-        private Point _location;
-        private Rectangle _boundary;
-        private float _scale;
-        private CardStack[] _stacks;
+        protected Point _location;
+        protected Rectangle _boundary;
+        protected float _scale;
+        protected CardStack[] _stacks;
 
-        private Texture2D _solid;
+        protected Texture2D _solid;
 
-        private StackType _slotType;
+        protected StackType _slotType;
         
         public float Scale => _scale;
 
@@ -54,6 +56,11 @@ namespace CardGame.Core.GameElements
             return null;
         }
 
+        public Point GetStackCenter(int stackNumber)
+        {
+            return _stacks[stackNumber].Bound.Center;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             if (_solid == null)
@@ -87,9 +94,9 @@ namespace CardGame.Core.GameElements
             _stacks[stackNumber].AddCard(card);
         }
 
-        internal void Shuffle(int stackNumber)
+        public List<CardStack> GetEmptyStacks()
         {
-            _stacks[stackNumber].Shuffle();
+            return _stacks.Where(s => s.IsEmpty).ToList();
         }
     }
 }

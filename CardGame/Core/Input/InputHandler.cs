@@ -28,6 +28,11 @@ namespace CardGame.Core.Input
                 return new List<GameCommand> { new ExitCommand() };
             }
 
+            if (keyState.IsKeyDown(Keys.Enter))
+            {
+                return new List<GameCommand> { new DrawCommand() };
+            }
+
             _currentState = Mouse.GetState();
 
             if (HasBeenClicked())

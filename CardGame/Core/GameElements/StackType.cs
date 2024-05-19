@@ -4,6 +4,7 @@
     {
         Regular = 0,
         DropOnly = 1,
-        PickupOnly = 2
+        PickupOnly = 2,
+        NotInteractive = 3
     }
 }
