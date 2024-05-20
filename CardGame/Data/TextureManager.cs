@@ -24,6 +24,7 @@ namespace CardGame.Data
         public static Texture2D CardStar;
         public static Texture2D CardStarframe;
         public static Texture2D BackgroundDarkFrost;
+        public static Texture2D DeadPileDefault;
 
         public static void Init(ContentManager contentManager, SpriteBatch spriteBatch)
         {
@@ -39,8 +40,7 @@ namespace CardGame.Data
             CardStarframe = contentManager.Load<Texture2D>("gfx/cards/star_frame");
 
             BackgroundDarkFrost = contentManager.Load<Texture2D>("gfx/scenery/background");
-
-            //BuildCardTextures(new List<CardData>(), contentManager, spriteBatch);
+            DeadPileDefault = contentManager.Load<Texture2D>("gfx/cards/deadpile");
         }
 
         public static void BuildCardTextures(List<CardData> cards, ContentManager contentManager, SpriteBatch spriteBatch)
