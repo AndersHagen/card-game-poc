@@ -107,5 +107,10 @@ namespace CardGame.Core.GameElements
                 cards.RemoveAt(idx);
             }
         }
+
+        public bool Available()
+        {
+            return !IsFull;
+        }
     }
 }

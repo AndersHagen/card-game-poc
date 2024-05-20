@@ -4,9 +4,12 @@ using System;
 
 namespace CardGame.Core.GameElements.GameCards
 {
-    public class Card : GameObject, IDragable
+    public class Card : IDragable
     {
-        private Rectangle _bound;
+        public Texture2D Texture;
+        public Vector2 Position;
+        public Vector2 Center;
+
         private bool _held;
         private Texture2D _cardBack;
         private Texture2D _cardFront;
@@ -14,61 +17,54 @@ namespace CardGame.Core.GameElements.GameCards
         private bool _isFaceUp;
 
         private Vector2 _velocity;
+        public float Scale;
 
-        public Card(Texture2D front, Texture2D back, Vector2 position, float scale) : base(front, position, scale)
+        public Card(Texture2D front, Texture2D back, Vector2 position, float scale)
         {
+            Position = position;
+            Texture = front;
+            Center = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _cardBack = back;
             _cardFront = front;
-            SetBound();
+            Scale = scale;
             _held = false;
-            Texture = front;
             _isFaceUp = true;
             _velocity = Vector2.Zero;
         }
 
-        private void SetBound()
-        {
-            var top = (Position - Center * Scale).ToPoint();
-            var width = Texture.Width * Scale;
-            var height = Texture.Height * Scale;
-
-            _bound = new Rectangle(top.X, top.Y, (int)width, (int)height);
-        }
-
-        public override bool IsActive()
-        {
-            return true;
-        }
-
         public bool IsClicked(int x, int y)
         {
-            return _bound.Contains(x, y);
+            return false;
         }
 
-        public void Lift()
+        public Texture2D Lift()
         {
-            Scale += 0.02f;
+            _held = true;
+            return Texture;
         }
 
-        public void Drop(CardStack target = null)
-        {
-            if (target != null)
-            {
-                Scale = target.Scale;
-            }
-            else
-            {
-                Scale -= 0.02f;
-            }
-
-            _held = false;
-        }
-
-        public override void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             Texture = _isFaceUp ? _cardFront : _cardBack;
 
             Position += _velocity;
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch)
+        {
+            var tone = _held ? Color.Gray : Color.White;
+
+            spriteBatch.Draw(
+                Texture,
+                Position,
+                null,
+                tone,
+                0f,
+                Center,
+                Scale,
+                SpriteEffects.None,
+                0f
+                );
         }
 
         public void SetVelocity(Vector2 velocity)
@@ -78,15 +74,10 @@ namespace CardGame.Core.GameElements.GameCards
 
         public void OnClick(int x, int y)
         {
-            Lift();
-            _held = true;
         }
 
         public void OnRelease(int x, int y)
         {
-            if (!_held) return;
-            Drop();
-            _held = false;
         }
 
         public void OnDrag(int x, int y)
@@ -97,7 +88,6 @@ namespace CardGame.Core.GameElements.GameCards
         internal void SnapToPosition(Vector2 position)
         {
             Position = position;
-            SetBound();
         }
 
         internal void SetScale(float scale)
@@ -108,6 +98,11 @@ namespace CardGame.Core.GameElements.GameCards
         internal void Flip(bool faceUp)
         {
             _isFaceUp = faceUp;
+        }
+
+        internal void Release()
+        {
+            _held = false;
         }
     }
 }
