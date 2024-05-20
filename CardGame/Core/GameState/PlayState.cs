@@ -31,6 +31,7 @@ namespace CardGame.Core.GameState
         private StackGroup _playerHand;
 
         private Deck _deck;
+        private DeadPile _deadPile;
 
         private TurnManager _turnManager;
 
@@ -47,7 +48,8 @@ namespace CardGame.Core.GameState
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
             _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
 
-            _deck = new Deck(new Point(1400, 700), TextureManager.CardBack, 30, 0.25f);
+            _deck = new Deck(new Point(1400, 800), TextureManager.CardBack, 30, 0.25f);
+            _deadPile = new DeadPile(new Point(1161, 560), 0.2f);
 
             _playerStacks = new List<StackGroup>() 
             {
@@ -321,6 +323,7 @@ namespace CardGame.Core.GameState
             }
 
             _deck.Draw(spriteBatch);
+            _deadPile.Draw(spriteBatch);
         }
     }
 }
