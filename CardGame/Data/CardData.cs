@@ -1,9 +1,4 @@
 ﻿using CardGame.Core.GameElements.GameCards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CardGame.Data
 {
@@ -11,5 +6,9 @@ namespace CardGame.Data
     {
         public CardId CardId { get; set; }
         public string Image { get; set; }
+
+        public string CardType { get; set; }
+
+        public string Auras { get; set; }
     }
 }

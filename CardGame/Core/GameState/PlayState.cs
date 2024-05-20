@@ -59,7 +59,7 @@ namespace CardGame.Core.GameState
             for (var i = 0; i < 16; i++)
             {
                 var id = (CardId)(i % 4);
-                _playerDeck.AssignCardToSlot(CardFactory.CreateCard(GameObjectManager, TextureManager.CardImages[id], TextureManager.CardBack), 0);
+                _playerDeck.AssignCardToSlot(CardFactory.CreateCard(GameObjectManager, id, TextureManager.CardBack), 0);
             }
 
             _playerDeck.Shuffle();

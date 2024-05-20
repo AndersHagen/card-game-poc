@@ -1,5 +1,6 @@
 ﻿using CardGame.Core;
 using CardGame.Core.GameElements.GameCards;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -39,22 +40,45 @@ namespace CardGame.Data
 
             BackgroundDarkFrost = contentManager.Load<Texture2D>("gfx/scenery/background");
 
-            BuildCardTextures(new List<CardData>(), contentManager, spriteBatch);
+            //BuildCardTextures(new List<CardData>(), contentManager, spriteBatch);
         }
 
-        private static void BuildCardTextures(List<CardData> cards, ContentManager contentManager, SpriteBatch spriteBatch)
+        public static void BuildCardTextures(List<CardData> cards, ContentManager contentManager, SpriteBatch spriteBatch)
         {
-            using (var s = new StreamReader("Data/cards.json"))
-            {
-                var content = s.ReadToEnd();
-                cards = JsonSerializer.Deserialize<List<CardData>>(content);
-            }
-
             foreach (var card in cards)
             {
                 var texture = contentManager.Load<Texture2D>($"gfx/cards/{card.Image}");
-                CardImages.Add(card.CardId, CardFactory.BuildFrontTexture(spriteBatch, texture));
+                CardImages.Add(card.CardId, BuildFrontTexture(spriteBatch, texture));
             }
+        }
+
+        private static Texture2D BuildFrontTexture(SpriteBatch spriteBatch, Texture2D image)
+        {
+            var gfx = spriteBatch.GraphicsDevice;
+
+            var target = new RenderTarget2D(gfx, 750, 1050);
+
+            gfx.SetRenderTarget(target);
+
+            gfx.Clear(Color.Black);
+
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(image, new Vector2(12, 32), Color.White);
+            spriteBatch.Draw(TextureManager.CardDecor2, new Vector2(270, 760), Color.White);
+            spriteBatch.Draw(TextureManager.CardDecor, new Vector2(63, 630), Color.White);
+
+            spriteBatch.Draw(TextureManager.CardInfoBar, new Vector2(63, 830), Color.White);
+            spriteBatch.Draw(TextureManager.CardSwordSymbol, new Vector2(290, 870), Color.White);
+            spriteBatch.Draw(TextureManager.CardHeartSymbol, new Vector2(400, 870), Color.White);
+
+            spriteBatch.Draw(TextureManager.CardFrame, new Vector2(0, 0), Color.White);
+
+            spriteBatch.End();
+
+            gfx.SetRenderTarget(null);
+
+            return target;
         }
     }
 }
