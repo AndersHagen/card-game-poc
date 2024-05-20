@@ -44,6 +44,8 @@ namespace CardGame
 
             TextureManager.Init(Content, _spriteBatch);
 
+            AssetBuilder.BuildCardAssets(Content, _spriteBatch);
+
             _currentState.LoadContent(Content, _spriteBatch) ;
         }
 

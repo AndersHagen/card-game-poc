@@ -35,7 +35,21 @@ namespace CardGame.Core.GameElements.GameCards
 
         private void ApplyAuras()
         {
+            Attack = 0;
+            Health = 0;
 
+            foreach (var aura in _auras)
+            {
+                if (aura is ModifyAttackAura modAtkAura)
+                {
+                    Attack += modAtkAura.Modifier;
+                }
+
+                if (aura is ModifyHealthAura modHltAura)
+                {
+                    Health += modHltAura.Modifier;
+                }
+            }
         }
     }
 }
