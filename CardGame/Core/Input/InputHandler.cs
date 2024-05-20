@@ -30,7 +30,7 @@ namespace CardGame.Core.Input
 
             if (keyState.IsKeyDown(Keys.Enter))
             {
-                return new List<GameCommand> { new DrawCommand() };
+                return new List<GameCommand> { new EndStepCommand() };
             }
 
             _currentState = Mouse.GetState();

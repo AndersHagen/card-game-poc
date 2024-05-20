@@ -32,6 +32,8 @@ namespace CardGame.Core.GameState
 
         private Deck _deck;
 
+        private TurnManager _turnManager;
+
         private List<StackGroup> _playerStacks;
 
         private bool _dealingFromDeck;
@@ -39,6 +41,7 @@ namespace CardGame.Core.GameState
         public PlayState(GameObjectManager gameObjectManager)
         {
             GameObjectManager = gameObjectManager;
+            _turnManager = new TurnManager();
             InputHandler = new InputHandler();
             _mouseHeld = false;
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
@@ -77,93 +80,186 @@ namespace CardGame.Core.GameState
                 return new ExitCommand();
             }
 
-            if (_dealingFromDeck)
+            switch (_turnManager.CurrentState)
             {
-                if (Math.Abs((DealtCard.Position - DealtCardTargetPosition.Value).Length()) <= 20)
-                {
-                    DealtCardTarget.AddCard(DealtCard);
-                    DealtCard.SetVelocity(Vector2.Zero);
-                    DealtCard = null;
-                    DealtCardPosition = null;
-                    DealtCardTarget = null;
-                    DealtCardTargetPosition = null;
-                    _dealingFromDeck = DrawFromDeck(_playerHand, _deck);
-                }
-            }
-            else
-            {
-                foreach (var command in commands)
-                {
-                    if (command is DrawCommand)
+                case TurnState.Start:
+                    if (ProcessStartOfTurn())
                     {
-                        DrawFromDeck(_playerHand, _deck);
+                        _turnManager.ProgressToNextState();
                     }
-
-                    if (command is MouseClickCommand click)
+                    break;
+                case TurnState.Refresh:
+                    if (ProcessRefresh())
                     {
-                        Debug.WriteLine(command);
-
-                        var clickedStack = CheckIfStackClicked(click);
-
-                        if (clickedStack is CardStack stack)
-                        {
-                            var topCard = stack.PeekTopCard();
-
-                            if (topCard != null && HeldCard == null)
-                            {
-                                HeldCard = topCard;
-                                HeldCard.Lift();
-                                HeldCardPosition = topCard.Position;
-                                _lastStack = stack;
-                                stack.PopCard();
-                            }
-                        }
+                        _turnManager.ProgressToNextState();
                     }
-                    if (command is MouseDraggedCommand)
+                    break;
+                case TurnState.Sacrifice:
+                    if (ProcessSacrifice(commands))
                     {
-                        if (!_mouseHeld)
-                        {
-                            Debug.WriteLine(command);
-                            _mouseHeld = true;
-                        }
-
-                        if (HeldCard != null)
-                        {
-                            HeldCard.OnDrag((command as MouseDraggedCommand).X, (command as MouseDraggedCommand).Y);
-                        }
-
+                        _turnManager.ProgressToNextState();
                     }
-                    if (command is MouseReleaseCommand cmd)
+                    break;
+                case TurnState.Deployment:
+                    if (ProcessDeployment(commands))
                     {
-                        Debug.WriteLine(cmd);
-                        _mouseHeld = false;
-
-                        if (HeldCard != null)
-                        {
-                            var dropTarget = _playerArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _playerHand.OnDrop(HeldCard, cmd.X, cmd.Y);
-
-                            if (dropTarget is CardStack slot)
-                            {
-                                HeldCard.Drop(slot);
-                            }
-                            else
-                            {
-                                _lastStack.OnDrop(HeldCard, (int)HeldCardPosition?.X, (int)HeldCardPosition?.Y, true);
-                                HeldCard.Drop(_lastStack);
-                            }
-
-                            HeldCard = null;
-                            HeldCardPosition = null;
-                            _lastStack = null;
-                        }
+                        _turnManager?.ProgressToNextState();
                     }
-
-                }
+                    break;
+                case TurnState.Attack:
+                    if (ProcessAttack())
+                    {
+                        _turnManager.ProgressToNextState();
+                    }
+                    break;
+                case TurnState.Draw:
+                    if (ProcessDraw())
+                    {
+                        _turnManager.ProgressToNextState();
+                    }
+                    break;
+                case TurnState.Cleanup:
+                    if (ProcessCleanup())
+                    {
+                        _turnManager.ProgressToNextState();
+                    }
+                    break;
+                case TurnState.End:
+                    if (ProcessEndOfTurn())
+                    {
+                        _turnManager?.ProgressToNextState();
+                    }
+                    break;
             }
 
             GameObjectManager.Update(gameTime);
 
             return new EmptyCommand();
+        }
+
+        private bool ProcessEndOfTurn()
+        {
+            return true;
+        }
+
+        private bool ProcessCleanup()
+        {
+            return true;
+        }
+
+        private bool ProcessDraw()
+        {
+            if (!_dealingFromDeck)
+            {
+                return DrawFromDeck(_playerHand, _deck) == false;
+            }
+
+            if (Math.Abs((DealtCard.Position - DealtCardTargetPosition.Value).Length()) <= 20)
+            {
+                DealtCardTarget.AddCard(DealtCard);
+                DealtCard.SetVelocity(Vector2.Zero);
+                DealtCard = null;
+                DealtCardPosition = null;
+                DealtCardTarget = null;
+                DealtCardTargetPosition = null;
+                _dealingFromDeck = DrawFromDeck(_playerHand, _deck);
+
+                return _dealingFromDeck == false;
+            }
+
+            return false;
+        }
+
+        private bool ProcessAttack()
+        {
+            return true;
+        }
+
+        private bool ProcessDeployment(List<GameCommand> commands)
+        {
+            foreach (var command in commands)
+            {
+                if (command is EndStepCommand)
+                {
+                    return true;
+                }
+
+                if (command is MouseClickCommand click)
+                {
+                    Debug.WriteLine(command);
+
+                    var clickedStack = CheckIfStackClicked(click);
+
+                    if (clickedStack is CardStack stack)
+                    {
+                        var topCard = stack.PeekTopCard();
+
+                        if (topCard != null && HeldCard == null)
+                        {
+                            HeldCard = topCard;
+                            HeldCard.Lift();
+                            HeldCardPosition = topCard.Position;
+                            _lastStack = stack;
+                            stack.PopCard();
+                        }
+                    }
+                }
+                if (command is MouseDraggedCommand)
+                {
+                    if (!_mouseHeld)
+                    {
+                        Debug.WriteLine(command);
+                        _mouseHeld = true;
+                    }
+
+                    if (HeldCard != null)
+                    {
+                        HeldCard.OnDrag((command as MouseDraggedCommand).X, (command as MouseDraggedCommand).Y);
+                    }
+
+                }
+                if (command is MouseReleaseCommand cmd)
+                {
+                    Debug.WriteLine(cmd);
+                    _mouseHeld = false;
+
+                    if (HeldCard != null)
+                    {
+                        var dropTarget = _playerArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _playerHand.OnDrop(HeldCard, cmd.X, cmd.Y);
+
+                        if (dropTarget is CardStack slot)
+                        {
+                            HeldCard.Drop(slot);
+                        }
+                        else
+                        {
+                            _lastStack.OnDrop(HeldCard, (int)HeldCardPosition?.X, (int)HeldCardPosition?.Y, true);
+                            HeldCard.Drop(_lastStack);
+                        }
+
+                        HeldCard = null;
+                        HeldCardPosition = null;
+                        _lastStack = null;
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        private bool ProcessSacrifice(List<GameCommand> commands)
+        {
+            return true;
+        }
+
+        private bool ProcessStartOfTurn()
+        {
+            return true;
+        }
+
+        private bool ProcessRefresh()
+        {
+            return true;
         }
 
         private bool DrawFromDeck(StackGroup target, Deck deck)

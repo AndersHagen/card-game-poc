@@ -14,7 +14,7 @@ namespace CardGame.Core.Input.Commands
 
     public class ExitCommand : GameCommand { }
 
-    public class DrawCommand : GameCommand { }
+    public class EndStepCommand : GameCommand { }
 
     public class MouseClickCommand : GameCommand 
     {
