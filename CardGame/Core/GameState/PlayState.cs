@@ -1,5 +1,6 @@
 ﻿using CardGame.Core.GameElements;
 using CardGame.Core.GameElements.GameCards;
+using CardGame.Core.GameState.Processors;
 using CardGame.Core.Input;
 using CardGame.Core.Input.Commands;
 using CardGame.Data;
@@ -27,50 +28,40 @@ namespace CardGame.Core.GameState
         private Vector2? DealtCardTargetPosition;
         private CardStack _lastStack;
 
-        private StackGroup _playerArea;
-        private StackGroup _playerHand;
-
-        private Deck _deck;
-        private DeadPile _deadPile;
+        private DrawProcessor _drawProcessor;
 
         private TurnManager _turnManager;
 
-        private List<StackGroup> _playerStacks;
-
         private bool _dealingFromDeck;
+
+        private Player _player;
 
         public PlayState(GameObjectManager gameObjectManager)
         {
             GameObjectManager = gameObjectManager;
             _turnManager = new TurnManager();
             InputHandler = new InputHandler();
+            _drawProcessor = new DrawProcessor();
             _mouseHeld = false;
-            _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
-            _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
-
-            _deck = new Deck(new Point(1400, 800), TextureManager.CardBack, 30, 0.25f);
-            _deadPile = new DeadPile(new Point(1161, 560), 0.2f);
-
-            _playerStacks = new List<StackGroup>() 
-            {
-                _playerArea,
-                _playerHand,
-            };
 
             _dealingFromDeck = false;
         }
 
         public void LoadContent(ContentManager contentManager, SpriteBatch spriteBatch)
         {
+            var deck = new Deck(new Point(1400, 800), TextureManager.CardBack, 30, 0.25f);
+
             for (var i = 0; i < 16; i++)
             {
                 var id = (CardId)(i % 4);
 
                 var card = CardFactory.CreateCard(GameObjectManager, id, TextureManager.CardBack);
-                _deck.AddCard(card);
+                deck.AddCard(card);
             }
 
-            _deck.Shuffle();
+            deck.Shuffle();
+
+            _player = new Player(deck);
         }
 
         public GameCommand Update(GameTime gameTime)
@@ -115,7 +106,7 @@ namespace CardGame.Core.GameState
                     }
                     break;
                 case TurnState.Draw:
-                    if (ProcessDraw())
+                    if (_drawProcessor.ProcessDrawFromDeck(_player))
                     {
                         _turnManager.ProgressToNextState();
                     }
@@ -147,29 +138,6 @@ namespace CardGame.Core.GameState
         private bool ProcessCleanup()
         {
             return true;
-        }
-
-        private bool ProcessDraw()
-        {
-            if (!_dealingFromDeck)
-            {
-                return DrawFromDeck(_playerHand, _deck) == false;
-            }
-
-            if (Math.Abs((DealtCard.Position - DealtCardTargetPosition.Value).Length()) <= 20)
-            {
-                DealtCardTarget.AddCard(DealtCard);
-                DealtCard.SetVelocity(Vector2.Zero);
-                DealtCard = null;
-                DealtCardPosition = null;
-                DealtCardTarget = null;
-                DealtCardTargetPosition = null;
-                _dealingFromDeck = DrawFromDeck(_playerHand, _deck);
-
-                return _dealingFromDeck == false;
-            }
-
-            return false;
         }
 
         private bool ProcessAttack()
@@ -227,7 +195,7 @@ namespace CardGame.Core.GameState
 
                     if (HeldCard != null)
                     {
-                        var dropTarget = _playerArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _playerHand.OnDrop(HeldCard, cmd.X, cmd.Y);
+                        var dropTarget = _player.GameArea.OnDrop(HeldCard, cmd.X, cmd.Y) ?? _player.Hand.OnDrop(HeldCard, cmd.X, cmd.Y);
 
                         if (dropTarget is CardStack slot)
                         {
@@ -264,32 +232,11 @@ namespace CardGame.Core.GameState
             return true;
         }
 
-        private bool DrawFromDeck(StackGroup target, Deck deck)
-        {
-            var emptyStacks = target.GetEmptyStacks();
-
-            if (emptyStacks.Count > 0 && deck.TopCard != null)
-            {
-                var stack = emptyStacks.First();
-                var deckTopCard = deck.GetTopCard();
-
-                DealtCard = deckTopCard;
-                DealtCardPosition = deckTopCard.Position;
-                DealtCardTarget = stack;
-                DealtCardTargetPosition = stack.Bound.Center.ToVector2();
-
-                DealtCard.SetVelocity((DealtCardTargetPosition.Value - DealtCardPosition.Value) / 50f);
-                _dealingFromDeck = true;
-
-                return true;
-            }
-
-            return false;
-        }
-
         private IClickable CheckIfStackClicked(MouseClickCommand click)
         {
-            foreach (var stack in _playerStacks)
+            var playerStacks = new List<StackGroup> { _player.Hand, _player.GameArea };
+
+            foreach (var stack in playerStacks)
             {
                 var stackClicked = stack.OnClick(click.X, click.Y);
 
@@ -306,10 +253,7 @@ namespace CardGame.Core.GameState
         {
             spriteBatch.Draw(TextureManager.BackgroundDarkFrost, Vector2.Zero, null, Color.White * 0.5f, 0f, Vector2.Zero, 1.5f, SpriteEffects.None, 1f);
 
-            foreach (var stack in _playerStacks)
-            {
-                stack.Draw(spriteBatch);
-            }
+            _player.Draw(spriteBatch);
 
             GameObjectManager.Draw(spriteBatch);
             if (HeldCard != null)
@@ -317,13 +261,10 @@ namespace CardGame.Core.GameState
                 HeldCard.Draw(spriteBatch);
             }
 
-            if (DealtCard != null)
+            if (_drawProcessor.DrawnCard != null)
             {
-                DealtCard.Draw(spriteBatch);
+                _drawProcessor.DrawnCard.Draw(spriteBatch);
             }
-
-            _deck.Draw(spriteBatch);
-            _deadPile.Draw(spriteBatch);
         }
     }
 }
