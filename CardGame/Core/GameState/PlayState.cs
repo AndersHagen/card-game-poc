@@ -29,7 +29,8 @@ namespace CardGame.Core.GameState
 
         private StackGroup _playerArea;
         private StackGroup _playerHand;
-        private CardDeck _playerDeck;
+
+        private Deck _deck;
 
         private List<StackGroup> _playerStacks;
 
@@ -42,13 +43,13 @@ namespace CardGame.Core.GameState
             _mouseHeld = false;
             _playerArea = new StackGroup(new Point(350, 560), 5, 0.2f, 10, StackType.DropOnly);
             _playerHand = new StackGroup(new Point(170, 800), 6, 0.25f);
-            _playerDeck = new CardDeck(new Point(1400, 800), 1, 0.25f, 10, StackType.NotInteractive, 20, false);
+
+            _deck = new Deck(new Point(1400, 700), TextureManager.CardBack, 30, 0.25f);
 
             _playerStacks = new List<StackGroup>() 
             {
                 _playerArea,
                 _playerHand,
-                _playerDeck,
             };
 
             _dealingFromDeck = false;
@@ -59,10 +60,12 @@ namespace CardGame.Core.GameState
             for (var i = 0; i < 16; i++)
             {
                 var id = (CardId)(i % 4);
-                _playerDeck.AssignCardToSlot(CardFactory.CreateCard(GameObjectManager, id, TextureManager.CardBack), 0);
+
+                var card = CardFactory.CreateCard(GameObjectManager, id, TextureManager.CardBack);
+                _deck.AddCard(card);
             }
 
-            _playerDeck.Shuffle();
+            _deck.Shuffle();
         }
 
         public GameCommand Update(GameTime gameTime)
@@ -84,7 +87,7 @@ namespace CardGame.Core.GameState
                     DealtCardPosition = null;
                     DealtCardTarget = null;
                     DealtCardTargetPosition = null;
-                    _dealingFromDeck = FillHandFromDeck();
+                    _dealingFromDeck = DrawFromDeck(_playerHand, _deck);
                 }
             }
             else
@@ -93,7 +96,7 @@ namespace CardGame.Core.GameState
                 {
                     if (command is DrawCommand)
                     {
-                        FillHandFromDeck();
+                        DrawFromDeck(_playerHand, _deck);
                     }
 
                     if (command is MouseClickCommand click)
@@ -163,14 +166,14 @@ namespace CardGame.Core.GameState
             return new EmptyCommand();
         }
 
-        private bool FillHandFromDeck()
+        private bool DrawFromDeck(StackGroup target, Deck deck)
         {
-            var emptyStacks = _playerHand.GetEmptyStacks();
+            var emptyStacks = target.GetEmptyStacks();
 
-            if (emptyStacks.Count > 0 && _playerDeck.TopCard != null)
+            if (emptyStacks.Count > 0 && deck.TopCard != null)
             {
                 var stack = emptyStacks.First();
-                var deckTopCard = _playerDeck.GetTopCard();
+                var deckTopCard = deck.GetTopCard();
 
                 DealtCard = deckTopCard;
                 DealtCardPosition = deckTopCard.Position;
@@ -215,6 +218,13 @@ namespace CardGame.Core.GameState
             {
                 HeldCard.Draw(spriteBatch);
             }
+
+            if (DealtCard != null)
+            {
+                DealtCard.Draw(spriteBatch);
+            }
+
+            _deck.Draw(spriteBatch);
         }
     }
 }

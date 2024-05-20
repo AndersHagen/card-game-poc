@@ -181,18 +181,6 @@
 /processorParam:TextureFormat=Color
 /build:gfx/cards/sword.png
 
-#begin gfx/cards/testimage.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:gfx/cards/testimage.png
-
 #begin gfx/scenery/background.png
 /importer:TextureImporter
 /processor:TextureProcessor
