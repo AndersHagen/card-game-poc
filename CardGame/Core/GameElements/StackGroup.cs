@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace CardGame.Core.GameElements
 {
-    public class StackGroup : IClickable, IDropable
+    public class StackGroup : IClickable //, IDropable
     {
         protected Point _location;
-        protected Rectangle _boundary;
+        public Rectangle Bound { get; protected set; }
         protected float _scale;
         protected CardStack[] _stacks;
 
@@ -19,6 +19,8 @@ namespace CardGame.Core.GameElements
         protected StackType _slotType;
         
         public float Scale => _scale;
+
+        public List<CardStack> Stacks => _stacks.ToList();
 
         public StackGroup(Point location, int stacks, float scale, int padding = 10, StackType slotType = StackType.Regular, int stackSize = 1, bool isFaceUp = true) 
         {
@@ -29,7 +31,7 @@ namespace CardGame.Core.GameElements
             var width = (int)(scale * (stacks * (Constants.CARD_WIDTH + padding) + padding));
             var height = (int)(scale * (Constants.CARD_HEIGHT + padding + padding));
 
-            _boundary = new Rectangle(_location, new Point(width, height));
+            Bound = new Rectangle(_location, new Point(width, height));
             _stacks = new CardStack[stacks];
 
             for (var i = 0; i < _stacks.Length; i++)
@@ -57,11 +59,6 @@ namespace CardGame.Core.GameElements
             return null;
         }
 
-        public Point GetStackCenter(int stackNumber)
-        {
-            return _stacks[stackNumber].Bound.Center;
-        }
-
         public void Draw(SpriteBatch spriteBatch)
         {
             if (_solid == null)
@@ -70,29 +67,12 @@ namespace CardGame.Core.GameElements
                 _solid.SetData(new Color[1] { Color.White });
             }
 
-            spriteBatch.Draw(_solid, _boundary, Color.DarkBlue * 0.3f);
+            spriteBatch.Draw(_solid, Bound, Color.DarkBlue * 0.3f);
 
             foreach (var slot in _stacks)
             {
                 spriteBatch.Draw(_solid, slot.Bound, Color.DarkSlateGray * 0.3f);
             }
-        }
-
-        public IDropable OnDrop(IDragable dropped, int x, int y, bool isFailedMove = false)
-        {
-            foreach (var slot in _stacks)
-            {
-                var dropTarget = slot.OnDrop(dropped, x, y, isFailedMove);
-
-                if (dropTarget != null) return dropTarget;
-            }
-
-            return null;
-        }
-
-        public void AssignCardToSlot(Card card, int stackNumber)
-        {
-            _stacks[stackNumber].AddCard(card);
         }
 
         public List<CardStack> GetEmptyStacks()

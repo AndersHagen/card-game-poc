@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CardGame.Core.GameElements.GameCards;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,37 +11,32 @@ namespace CardGame.Core
 {
     public class GameObjectManager
     {
-        private List<GameObject> _gameObjects;
+        private List<Card> _cards;
 
         public GameObjectManager()
         {
-            _gameObjects = new List<GameObject>();
+            _cards = new List<Card>();
         }
         
-        public void RegisterObject(GameObject gameObject)
+        public void RegisterObject(Card card)
         {
-            _gameObjects.Add(gameObject);
+            _cards.Add(card);
         }
 
         public void Update(GameTime gameTime)
         {
-            foreach (var gameObject in _gameObjects)
+            foreach (var card in _cards)
             {
-                gameObject.Update(gameTime);
+                card.Update(gameTime);
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var gameObject in _gameObjects)
+            foreach (var card in _cards)
             {
-                gameObject.Draw(spriteBatch);
+                card.Draw(spriteBatch);
             }
-        }
-
-        public List<IClickable> GetClickableGameObjects() 
-        {
-            return _gameObjects.Where(o => o is IClickable).Cast<IClickable>().ToList();
         }
     }
 }
