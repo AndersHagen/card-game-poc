@@ -33,8 +33,6 @@ namespace CardGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _currentState = new PlayState(new GameObjectManager());
-
             base.Initialize();
         }
 
@@ -45,6 +43,8 @@ namespace CardGame
             TextureManager.Init(Content, _spriteBatch);
 
             AssetBuilder.BuildCardAssets(Content, _spriteBatch);
+
+            _currentState = new PlayState(new GameObjectManager());
 
             _currentState.LoadContent(Content, _spriteBatch) ;
         }
