@@ -2,11 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CardGame.Core.GameElements
 {
@@ -83,19 +80,29 @@ namespace CardGame.Core.GameElements
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (TopCard != null) return;
+            var texture = TopCard?.Texture ?? _emptyTexture;
+
+            var dimming = TopCard == null ? 0.3f : 1f;
 
             spriteBatch.Draw(
-                _emptyTexture,
+                texture,
                 Position,
                 null,
-                Color.White * 0.3f,
+                Color.White * dimming,
                 0f,
                 Vector2.Zero,
                 Scale,
                 SpriteEffects.None,
                 1
             );
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            foreach (var card in _cards)
+            {
+                card.Update(gameTime);
+            }
         }
     }
 }

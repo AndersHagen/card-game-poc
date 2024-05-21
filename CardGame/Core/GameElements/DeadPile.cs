@@ -30,6 +30,14 @@ namespace CardGame.Core.GameElements
             Bound = new Rectangle(position.X, position.Y, (int)(scale * Constants.CARD_WIDTH), (int)(scale * Constants.CARD_HEIGHT));
         }
 
+        public void Update(GameTime gameTime)
+        {
+            foreach (var card in _cards)
+            {
+                card.Update(gameTime);
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             if (!IsEmpty) return;
