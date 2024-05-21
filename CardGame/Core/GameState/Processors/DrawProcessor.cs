@@ -9,7 +9,7 @@ namespace CardGame.Core.GameState.Processors
     {
         private bool _drawing;
 
-        public DrawnCard DrawnCard { get; private set; }
+        public ActiveCard DrawnCard { get; private set; }
 
         public DrawProcessor()
         {
@@ -61,7 +61,7 @@ namespace CardGame.Core.GameState.Processors
                 var stack = emptyStacks.First();
                 var deckTopCard = deck.GetTopCard();
 
-                DrawnCard = new DrawnCard
+                DrawnCard = new ActiveCard
                 {
                     Card = deckTopCard,
                     Target = stack,

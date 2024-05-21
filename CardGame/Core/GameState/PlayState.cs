@@ -14,7 +14,6 @@ namespace CardGame.Core.GameState
 {
     public class PlayState
     {
-        public GameObjectManager GameObjectManager;
         public InputHandler InputHandler;
 
         private DrawProcessor _drawProcessor;
@@ -24,9 +23,8 @@ namespace CardGame.Core.GameState
 
         private Player _player;
 
-        public PlayState(GameObjectManager gameObjectManager)
+        public PlayState()
         {
-            GameObjectManager = gameObjectManager;
             _turnManager = new TurnManager();
             InputHandler = new InputHandler();
             _drawProcessor = new DrawProcessor();
@@ -41,7 +39,7 @@ namespace CardGame.Core.GameState
             {
                 var id = (CardId)(i % 4);
 
-                var card = CardFactory.CreateCard(GameObjectManager, id, TextureManager.CardBack);
+                var card = CardFactory.CreateCard(id, TextureManager.CardBack);
                 deck.AddCard(card);
             }
 

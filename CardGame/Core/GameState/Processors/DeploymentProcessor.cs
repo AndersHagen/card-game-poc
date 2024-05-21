@@ -15,7 +15,7 @@ namespace CardGame.Core.GameState.Processors
 
         private bool _mousePressed;
 
-        public HeldCard HeldCard;
+        public ActiveCard HeldCard;
 
         public DeploymentProcessor() 
         {
@@ -43,7 +43,7 @@ namespace CardGame.Core.GameState.Processors
 
                         if (topCard != null && HeldCard == null)
                         {
-                            HeldCard = new HeldCard
+                            HeldCard = new ActiveCard
                             {
                                 Texture = topCard.Lift(),
                                 Center = topCard.Center,
