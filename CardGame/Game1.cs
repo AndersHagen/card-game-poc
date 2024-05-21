@@ -44,7 +44,7 @@ namespace CardGame
 
             AssetBuilder.BuildCardAssets(Content, _spriteBatch);
 
-            _currentState = new PlayState(new GameObjectManager());
+            _currentState = new PlayState();
 
             _currentState.LoadContent(Content, _spriteBatch) ;
         }

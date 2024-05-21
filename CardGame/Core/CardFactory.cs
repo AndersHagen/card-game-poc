@@ -11,7 +11,7 @@ namespace CardGame.Core
         public static Dictionary<CardId, List<Aura>> _startingAuras = new Dictionary<CardId, List<Aura>>();
         public static Dictionary<CardId, string> _typeById = new Dictionary<CardId, string>();
 
-        public static Card CreateCard(GameObjectManager graphicsManager, CardId id, Texture2D back)
+        public static Card CreateCard(CardId id, Texture2D back)
         {
             var front = TextureManager.CardImages[id];
 
