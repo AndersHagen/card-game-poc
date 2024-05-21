@@ -1,5 +1,4 @@
-﻿using CardGame.Core.GameElements.GameCards;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace CardGame.Core.GameElements
 {
-    public class StackGroup : IClickable //, IDropable
+    public class StackGroup : IClickable
     {
         protected Point _location;
         public Rectangle Bound { get; protected set; }
@@ -18,8 +17,6 @@ namespace CardGame.Core.GameElements
 
         protected StackType _slotType;
         
-        public float Scale => _scale;
-
         public List<CardStack> Stacks => _stacks.ToList();
 
         public StackGroup(Point location, int stacks, float scale, int padding = 10, StackType slotType = StackType.Regular, int stackSize = 1, bool isFaceUp = true) 
@@ -59,6 +56,14 @@ namespace CardGame.Core.GameElements
             return null;
         }
 
+        public void Update(GameTime gameTime)
+        {
+            foreach (var stack in _stacks)
+            {
+                stack.Update(gameTime);
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             if (_solid == null)
@@ -71,7 +76,14 @@ namespace CardGame.Core.GameElements
 
             foreach (var slot in _stacks)
             {
-                spriteBatch.Draw(_solid, slot.Bound, Color.DarkSlateGray * 0.3f);
+                if (slot.TopCard != null)
+                {
+                    slot.TopCard.Draw(spriteBatch);
+                } 
+                else
+                {
+                    spriteBatch.Draw(_solid, slot.Bound, Color.DarkSlateGray * 0.3f);
+                }
             }
         }
 

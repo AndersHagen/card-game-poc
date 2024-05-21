@@ -2,7 +2,6 @@
 using CardGame.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 
 namespace CardGame.Core
@@ -23,7 +22,6 @@ namespace CardGame.Core
                 case "Minion":
                     var minion = new Minion(front, back, Vector2.Zero, 1f);
                     minion.AddAuras(_startingAuras[id]);
-                    graphicsManager.RegisterObject(minion);
                     return minion;
             }
 

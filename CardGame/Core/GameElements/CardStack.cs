@@ -17,7 +17,6 @@ namespace CardGame.Core.GameElements
         public bool IsFull => _cards.Count == _maxStackSize;
         public bool IsEmpty => _cards.Count == 0;
 
-        public float Scale => _scale;
         private StackType _stackType;
 
         private Stack<Card> _cards;
@@ -89,22 +88,11 @@ namespace CardGame.Core.GameElements
             return true;
         }
 
-        public void Shuffle()
+        public void Update(GameTime gameTime)
         {
-            if (_cards.Count <= 1) return;
-
-            var rnd = new Random((int)(DateTime.Now.Ticks % Int32.MaxValue));
-
-            var cards = _cards.ToList();
-
-            _cards.Clear();
-
-            while (cards.Count > 0)
+            foreach (var card in _cards)
             {
-                var idx = rnd.Next(0, cards.Count);
-
-                _cards.Push(cards[idx]);
-                cards.RemoveAt(idx);
+                card.Update(gameTime);
             }
         }
 

@@ -28,6 +28,14 @@ namespace CardGame.Core.GameElements
             DeadPile = new DeadPile(new Point(1161, 560), 0.2f);
         }
 
+        public void Update(GameTime gameTime)
+        {
+            Deck.Update(gameTime);
+            Hand.Update(gameTime);
+            GameArea.Update(gameTime);
+            DeadPile.Update(gameTime);
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             GameArea.Draw(spriteBatch);

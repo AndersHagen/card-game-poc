@@ -1,11 +1,7 @@
 ﻿using CardGame.Core.GameElements;
-using CardGame.Core.GameElements.GameCards;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CardGame.Core.GameState.Processors
 {
@@ -13,10 +9,7 @@ namespace CardGame.Core.GameState.Processors
     {
         private bool _drawing;
 
-        public Card DrawnCard { get; private set; }
-        private Vector2? DrawnCardPosition;
-        private CardStack DrawnCardTarget;
-        private Vector2? DrawnCardTargetPosition;
+        public DrawnCard DrawnCard { get; private set; }
 
         public DrawProcessor()
         {
@@ -30,20 +23,30 @@ namespace CardGame.Core.GameState.Processors
                 return DrawFromDeck(player) == false;
             }
 
-            if (Math.Abs((DrawnCard.Position - DrawnCardTargetPosition.Value).Length()) <= 20)
+            if (Math.Abs((DrawnCard.Card.Position - DrawnCard.TargetPosition).Length()) <= 20)
             {
-                DrawnCardTarget.AddCard(DrawnCard);
-                DrawnCard.SetVelocity(Vector2.Zero);
+                if (DrawnCard.Target is CardStack stack)
+                {
+                    stack.AddCard(DrawnCard.Card);
+                    DrawnCard.Card.SetVelocity(Vector2.Zero);
+                }
+                else
+                {
+                    throw new Exception("Unsupported source or target for draw!");
+                }
+
                 DrawnCard = null;
-                DrawnCardPosition = null;
-                DrawnCardTarget = null;
-                DrawnCardTargetPosition = null;
                 _drawing = DrawFromDeck(player);
 
                 return _drawing == false;
             }
 
             return false;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            DrawnCard?.Card.Update(gameTime);
         }
 
         private bool DrawFromDeck(Player player)
@@ -58,12 +61,14 @@ namespace CardGame.Core.GameState.Processors
                 var stack = emptyStacks.First();
                 var deckTopCard = deck.GetTopCard();
 
-                DrawnCard = deckTopCard;
-                DrawnCardPosition = deckTopCard.Position;
-                DrawnCardTarget = stack;
-                DrawnCardTargetPosition = stack.Bound.Center.ToVector2();
+                DrawnCard = new DrawnCard
+                {
+                    Card = deckTopCard,
+                    Target = stack,
+                    TargetPosition = stack.Bound.Center.ToVector2()
+                };
 
-                DrawnCard.SetVelocity((DrawnCardTargetPosition.Value - DrawnCardPosition.Value) / 50f);
+                DrawnCard.Card.SetVelocity((DrawnCard.TargetPosition- DrawnCard.Card.Position) / 50f);
                 _drawing = true;
 
                 return true;

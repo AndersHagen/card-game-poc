@@ -96,6 +96,10 @@ namespace CardGame.Core.GameState
                     {
                         _turnManager.ProgressToNextState();
                     }
+                    else
+                    {
+                        _drawProcessor.Update(gameTime);
+                    }
                     break;
                 case TurnState.Cleanup:
                     if (ProcessCleanup())
@@ -111,7 +115,7 @@ namespace CardGame.Core.GameState
                     break;
             }
 
-            GameObjectManager.Update(gameTime);
+            _player.Update(gameTime);
 
             return new EmptyCommand();
         }
@@ -152,7 +156,6 @@ namespace CardGame.Core.GameState
 
             _player.Draw(spriteBatch);
 
-            GameObjectManager.Draw(spriteBatch);
             if (_deploymentProcessor.HeldCard != null)
             {
                 spriteBatch.Draw(
@@ -170,7 +173,7 @@ namespace CardGame.Core.GameState
 
             if (_drawProcessor.DrawnCard != null)
             {
-                _drawProcessor.DrawnCard.Draw(spriteBatch);
+                _drawProcessor.DrawnCard.Card.Draw(spriteBatch);
             }
         }
     }
