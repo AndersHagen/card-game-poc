@@ -18,6 +18,7 @@ namespace CardGame.Core.GameState
 
         private DrawProcessor _drawProcessor;
         private DeploymentProcessor _deploymentProcessor;
+        private SacrificeProcessor _sacrificeProcessor;
 
         private TurnManager _turnManager;
 
@@ -27,8 +28,6 @@ namespace CardGame.Core.GameState
         {
             _turnManager = new TurnManager();
             InputHandler = new InputHandler();
-            _drawProcessor = new DrawProcessor();
-            _deploymentProcessor = new DeploymentProcessor();
         }
 
         public void LoadContent(ContentManager contentManager, SpriteBatch spriteBatch)
@@ -46,6 +45,11 @@ namespace CardGame.Core.GameState
             deck.Shuffle();
 
             _player = new Player(deck);
+
+            _sacrificeProcessor = new SacrificeProcessor(_player);
+            _drawProcessor = new DrawProcessor();
+            _deploymentProcessor = new DeploymentProcessor(_player);
+
         }
 
         public GameCommand Update(GameTime gameTime)
@@ -72,7 +76,7 @@ namespace CardGame.Core.GameState
                     }
                     break;
                 case TurnState.Sacrifice:
-                    if (ProcessSacrifice(commands))
+                    if (_sacrificeProcessor.ProcessSacrifice(commands))
                     {
                         _turnManager.ProgressToNextState();
                     }
@@ -133,11 +137,6 @@ namespace CardGame.Core.GameState
             return true;
         }
 
-        private bool ProcessSacrifice(List<GameCommand> commands)
-        {
-            return true;
-        }
-
         private bool ProcessStartOfTurn()
         {
             return true;
@@ -154,16 +153,18 @@ namespace CardGame.Core.GameState
 
             _player.Draw(spriteBatch);
 
-            if (_deploymentProcessor.HeldCard != null)
+            var activeCard = _sacrificeProcessor.HeldCard ?? _deploymentProcessor.HeldCard;
+
+            if (activeCard != null)
             {
                 spriteBatch.Draw(
-                    _deploymentProcessor.HeldCard.Texture,
-                    _deploymentProcessor.HeldCard.Position,
+                    activeCard.Texture,
+                    activeCard.Position,
                     null,
                     Color.White,
                     0f,
-                    _deploymentProcessor.HeldCard.Center,
-                    _deploymentProcessor.HeldCard.Scale,
+                    activeCard.Center,
+                    activeCard.Scale,
                     SpriteEffects.None,
                     0
                 );

@@ -2,16 +2,13 @@
 
 namespace CardGame.Core.Input
 {
-    public class DropHelper
+    public class DropHelper<T> where T : IDropable
     {
-        public List<IDropable> ValidTargets { get; private set; }
-
         public DropHelper(List<IDropable> validTargets = null)
         {
-            ValidTargets = validTargets ?? new List<IDropable>();
         }
 
-        public IDropable CheckDrop(IEnumerable<IDropable> validTargets, int x, int y)
+        public IDropable CheckDrop(IEnumerable<T> validTargets, int x, int y)
         {
             foreach (var target in validTargets)
             {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CardGame.Core.GameElements
 {
-    public class DeadPile
+    public class DeadPile : IDropable
     {
         private Stack<Card> _cards;
 
@@ -40,13 +40,14 @@ namespace CardGame.Core.GameElements
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!IsEmpty) return;
+            var texture = TopCard?.Texture ?? _emptyTexture;
+            var tint = TopCard == null ? 0.5f : 0.3f;
 
             spriteBatch.Draw(
-                _emptyTexture,
+                texture,
                 Position,
                 null,
-                Color.DarkGray * 0.3f,
+                Color.DarkGray * tint,
                 0f,
                 Vector2.Zero,
                 Scale,
@@ -55,9 +56,21 @@ namespace CardGame.Core.GameElements
             );
         }
 
-        public void AddCard(Card card)
+        public bool AddCard(Card card)
         {
             _cards.Push(card);
+            
+            return true;
+        }
+
+        public IDropable OnDrop(IDragable dropped, int x, int y, bool isFailedMove = false)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Available()
+        {
+            return true;
         }
     }
 }
