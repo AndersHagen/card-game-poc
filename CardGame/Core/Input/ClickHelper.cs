@@ -2,16 +2,13 @@
 
 namespace CardGame.Core.Input
 {
-    public class ClickHelper
+    public class ClickHelper<T> where T : IClickable
     {
-        public List<IClickable> ValidTargets { get; private set; }
-
-        public ClickHelper(List<IClickable> validTargets = null)
+        public ClickHelper()
         {
-            ValidTargets = validTargets ?? new List<IClickable>();
         }
 
-        public IClickable CheckClick(IEnumerable<IClickable> validTargets, int x, int y)
+        public IClickable CheckClick(IEnumerable<T> validTargets, int x, int y)
         {
             foreach (var target in validTargets)
             {

@@ -75,7 +75,7 @@ namespace CardGame.Core.GameElements
             return null;
         }
 
-        internal bool AddCard(Card card)
+        public bool AddCard(Card card)
         {
             if (IsFull) return false;
 
