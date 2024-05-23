@@ -13,7 +13,7 @@ namespace CardGame.Core.GameElements.GameCards
         private Texture2D _cardBack;
         private Texture2D _cardFront;
 
-        private bool _isFaceUp;
+        protected bool IsFaceUp;
 
         private Vector2 _velocity;
         public float Scale;
@@ -27,7 +27,7 @@ namespace CardGame.Core.GameElements.GameCards
             _cardFront = front;
             Scale = scale;
             _held = false;
-            _isFaceUp = true;
+            IsFaceUp = true;
             _velocity = Vector2.Zero;
         }
 
@@ -44,7 +44,7 @@ namespace CardGame.Core.GameElements.GameCards
 
         public virtual void Update(GameTime gameTime)
         {
-            Texture = _isFaceUp ? _cardFront : _cardBack;
+            Texture = IsFaceUp ? _cardFront : _cardBack;
 
             Position += _velocity;
         }
@@ -96,7 +96,7 @@ namespace CardGame.Core.GameElements.GameCards
 
         internal void Flip(bool faceUp)
         {
-            _isFaceUp = faceUp;
+            IsFaceUp = faceUp;
         }
 
         internal void Release()

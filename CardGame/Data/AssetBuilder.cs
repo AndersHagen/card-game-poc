@@ -28,9 +28,8 @@ namespace CardGame.Data
 
             foreach (var card in cardData)
             {
-                CardFactory.RegisterTypeForId(card.CardId, card.CardType);
                 var auras = ParseAuraString(card.Auras);
-                CardFactory.RegisterAurasForId(card.CardId, auras);
+                CardFactory.RegisterCardInfoForId(new CardInfo(card, auras));
             }
         }
 

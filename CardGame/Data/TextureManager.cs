@@ -26,6 +26,8 @@ namespace CardGame.Data
         public static Texture2D BackgroundDarkFrost;
         public static Texture2D DeadPileDefault;
 
+        public static SpriteFont SimpleFont;
+
         public static void Init(ContentManager contentManager, SpriteBatch spriteBatch)
         {
             CardBack = contentManager.Load<Texture2D>("gfx/cards/cardback1");
@@ -41,6 +43,9 @@ namespace CardGame.Data
 
             BackgroundDarkFrost = contentManager.Load<Texture2D>("gfx/scenery/background");
             DeadPileDefault = contentManager.Load<Texture2D>("gfx/cards/deadpile");
+
+            // Fonts
+            SimpleFont = contentManager.Load<SpriteFont>("simple_font");
         }
 
         public static void BuildCardTextures(List<CardData> cards, ContentManager contentManager, SpriteBatch spriteBatch)
@@ -65,14 +70,14 @@ namespace CardGame.Data
             spriteBatch.Begin();
 
             spriteBatch.Draw(image, new Vector2(12, 32), Color.White);
-            spriteBatch.Draw(TextureManager.CardDecor2, new Vector2(270, 760), Color.White);
-            spriteBatch.Draw(TextureManager.CardDecor, new Vector2(63, 630), Color.White);
+            spriteBatch.Draw(CardDecor2, new Vector2(270, 760), Color.White);
+            spriteBatch.Draw(CardDecor, new Vector2(63, 630), Color.White);
 
-            spriteBatch.Draw(TextureManager.CardInfoBar, new Vector2(63, 830), Color.White);
-            spriteBatch.Draw(TextureManager.CardSwordSymbol, new Vector2(290, 870), Color.White);
-            spriteBatch.Draw(TextureManager.CardHeartSymbol, new Vector2(400, 870), Color.White);
+            spriteBatch.Draw(CardInfoBar, new Vector2(63, 830), Color.White);
+            spriteBatch.Draw(CardSwordSymbol, new Vector2(290, 870), Color.White);
+            spriteBatch.Draw(CardHeartSymbol, new Vector2(400, 870), Color.White);
 
-            spriteBatch.Draw(TextureManager.CardFrame, new Vector2(0, 0), Color.White);
+            spriteBatch.Draw(CardFrame, new Vector2(0, 0), Color.White);
 
             spriteBatch.End();
 
