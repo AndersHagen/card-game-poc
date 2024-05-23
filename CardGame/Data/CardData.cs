@@ -9,6 +9,10 @@ namespace CardGame.Data
 
         public string CardType { get; set; }
 
+        public int Attack { get; set; }
+
+        public int Health { get; set; }
+
         public string Auras { get; set; }
     }
 }

@@ -8,34 +8,29 @@ namespace CardGame.Core
 {
     public static class CardFactory
     {
-        public static Dictionary<CardId, List<Aura>> _startingAuras = new Dictionary<CardId, List<Aura>>();
-        public static Dictionary<CardId, string> _typeById = new Dictionary<CardId, string>();
+        public static Dictionary<CardId, CardInfo> _infoById = new Dictionary<CardId, CardInfo>();
 
         public static Card CreateCard(CardId id, Texture2D back)
         {
             var front = TextureManager.CardImages[id];
 
             Card card = null;
+            var info = _infoById[id];
 
-            switch (_typeById[id])
+            switch (info.CardType)
             {
                 case "Minion":
-                    var minion = new Minion(front, back, Vector2.Zero, 1f);
-                    minion.AddAuras(_startingAuras[id]);
+                    var minion = new Minion(front, back, Vector2.Zero, 1f, info.Attack, info.Health);
+                    minion.AddAuras(info.Auras);
                     return minion;
             }
 
             return card;
         }
 
-        public static void RegisterAurasForId(CardId id, List<Aura> auras) 
+        public static void RegisterCardInfoForId(CardInfo info)
         {
-            _startingAuras.Add(id, auras);
-        }
-
-        public static void RegisterTypeForId(CardId id, string type)
-        {
-            _typeById.Add(id, type);
+            _infoById.Add(info.CardId, info);
         }
     }
 }

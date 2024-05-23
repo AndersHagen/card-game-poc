@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CardGame.Data;
+using Microsoft.VisualBasic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace CardGame.Core.GameElements.GameCards
 {
@@ -11,11 +14,17 @@ namespace CardGame.Core.GameElements.GameCards
 
         private List<Aura> _auras;
 
-        public Minion(Texture2D front, Texture2D back, Vector2 position, float scale) : base(front, back, position, scale)
+        private CardText _attackText;
+        private CardText _healthText;
+
+        public Minion(Texture2D front, Texture2D back, Vector2 position, float scale, int attack, int health) : base(front, back, position, scale)
         {
-            Attack = 0;
-            Health = 0;
+            Attack = attack;
+            Health = health;
+
             _auras = new List<Aura>();
+            _attackText = new CardText(TextureManager.SimpleFont, Attack.ToString(), new Vector2(-220, 335));
+            _healthText = new CardText(TextureManager.SimpleFont, Health.ToString(), new Vector2(170, 335));
         }
 
         public void AddAuras(List<Aura> auras) 
@@ -31,6 +40,12 @@ namespace CardGame.Core.GameElements.GameCards
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+
+            if (IsFaceUp) 
+            { 
+                _attackText.Draw(spriteBatch, Position, Scale);
+                _healthText.Draw(spriteBatch, Position, Scale);
+            }
         }
 
         private void ApplyAuras()

@@ -2,25 +2,33 @@
   {
     "CardId": 0,
     "CardType": "Minion",
+    "Attack": 3,
+    "Health": 2,
     "Image": "skele_mage",
-    "Auras": "Atk:3;Hlt:2"
+    "Auras": ""
   },
   {
     "CardId": 1,
     "CardType": "Minion",
+    "Attack": 1,
+    "Health": 2,
     "Image": "swamp_zombie",
-    "Auras": "Atk:1;Hlt:2"
+    "Auras": ""
   },
   {
     "CardId": 2,
     "CardType": "Minion",
+    "Attack": 3,
+    "Health": 4,
     "Image": "skeleton_warlord",
-    "Auras": "Atk:3;Hlt:4"
+    "Auras": ""
   },
   {
     "CardId": 3,
     "CardType": "Minion",
+    "Attack": 2,
+    "Health": 4,
     "Image": "bone_golem",
-    "Auras": "Atk:2;Hlt:3"
+    "Auras": ""
   }
 ]
